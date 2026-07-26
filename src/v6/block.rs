@@ -35,6 +35,7 @@ pub enum Block {
     SceneTextItem(SceneItemBlock<Text>),
     AuthorsIds(AuthorsIdsBlock),
     RootText(RootTextBlock),
+    Unknown { block_type: u8, data: Vec<u8> },
 }
 
 /// Parsing methods for parsing blocks
@@ -112,11 +113,10 @@ impl TypeParse for Block {
             0x07 => Block::RootText(RootTextBlock::parse(&info, reader)?),
             0x09 => Block::AuthorsIds(AuthorsIdsBlock::parse(&info, reader)?),
             0x0A => Block::PageInfo(PageInfoBlock::parse(&info, reader)?),
-            _ => {
-                return Err(ParseError::invalid(format!(
-                    "Unknown block type: '{block_type}'"
-                )))
-            }
+            _ => Block::Unknown {
+                block_type,
+                data: reader.bit_reader.read_bytes(size as usize)?,
+            },
         };
 
         let expected_offset = start_offset + size as u64;

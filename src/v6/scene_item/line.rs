@@ -40,13 +40,13 @@ impl BlockParse for Line {
 
         let subblock = reader.read_subblock(5)?;
         let point_size = point_serialize_size(info.current_version)?;
-        if info.size % point_size != 0 {
+        if subblock.size % point_size != 0 {
             return Err(ParseError::invalid(format!(
                 "Invalid point data size. {} is not multiple of {point_size}",
-                info.size
+                subblock.size
             )));
         }
-        let points = (0..info.size / point_size)
+        let points = (0..subblock.size / point_size)
             .into_iter()
             .map(|_| Point::parse(info, reader))
             .collect::<Result<Vec<Point>, ParseError>>()?;
