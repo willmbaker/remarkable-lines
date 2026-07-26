@@ -11,14 +11,17 @@ pub struct SubBlock {
 impl SubBlock {
     pub fn validate_size(
         &self,
-        reader: &TaggedBitreader<impl Readable>,
+        reader: &mut TaggedBitreader<impl Readable>,
     ) -> Result<(), crate::ParseError> {
         let expected_offset = self.position + self.size as u64;
         let end_offset = reader.bit_reader.position();
-        if expected_offset != end_offset {
+        if end_offset > expected_offset {
             return Err(ParseError::invalid(format!(
-                "Did not read expected size of subblock. got {end_offset:x} expected {expected_offset:x}" 
+                "Subblock overflowed its declared size. got {end_offset:x} expected {expected_offset:x}"
             )));
+        }
+        if end_offset < expected_offset {
+            reader.bit_reader.set_position(expected_offset);
         }
         Ok(())
     }
