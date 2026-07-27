@@ -27,8 +27,9 @@ impl BlockParse for MigrationInfoBlock {
 
         let is_device = reader.read_u8(2)? > 0;
 
-        if info.has_bytes_remaining(&mut reader.bit_reader) {
-            _ = reader.bit_reader.read_u8();
+        let end_offset = info.start_offset + info.size as u64;
+        if reader.bit_reader.position() < end_offset {
+            reader.bit_reader.set_position(end_offset);
         }
         Ok(Self {
             migration_id,
