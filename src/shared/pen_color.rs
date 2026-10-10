@@ -12,6 +12,11 @@ pub enum PenColor {
     Blue,
     Red,
     GreyOverlap,
+    Highlight,
+    GreenTwo,
+    Cyan,
+    Magenta,
+    YellowTwo,
 }
 
 impl TryFrom<u32> for PenColor {
@@ -28,6 +33,11 @@ impl TryFrom<u32> for PenColor {
             0x06 => Ok(PenColor::Blue),
             0x07 => Ok(PenColor::Red),
             0x08 => Ok(PenColor::GreyOverlap),
+            0x09 => Ok(PenColor::Highlight),
+            0x0a => Ok(PenColor::GreenTwo),
+            0x0b => Ok(PenColor::Cyan),
+            0x0c => Ok(PenColor::Magenta),
+            0x0d => Ok(PenColor::YellowTwo),
             _ => Err(ParseError::invalid(format!(
                 "Invalid color with value '{value}'"
             ))),
